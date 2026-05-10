@@ -1,0 +1,1432 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gosil</title>
+
+<style>
+
+    /* 기본 초기화 및 폰트 */
+    :root {
+        --primary: #000000;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    }
+
+    body {
+        background: #111;
+        background-image: url('images/gosilbackground.jpg');
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: white;
+        padding: 0; /* 네비바 때문에 0으로 수정 */
+        
+    }
+
+    /* 네비게이션 바 */
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #fff;
+        padding: 1rem 5%;
+        color: #000;
+        border-bottom: 1px solid #000;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .logo {
+        font-size: 1.5rem;
+        font-weight: 900;
+        letter-spacing: -1px;
+        color: #000;
+    }
+
+    .nav-links {
+        list-style: none;
+        display: flex;
+        gap: 30px;
+    }
+
+    .nav-links button {
+        background: none;
+        border: none;
+        color: #000;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .nav-links button:hover {
+        opacity: 0.5;
+        text-decoration: underline;
+    }
+
+    /* 컨텐츠 영역 공통 */
+    .content-section {
+        padding: 40px 5%;
+    }
+
+    /* 상태 제어용: 기본적으로 숨김 */
+    .gosil-learn {
+        display: none;
+    }
+
+    .my-after-school {
+        display: none;
+    }
+
+    /* 급식 스타일 */
+    #meal {
+        margin-top: 20px;
+        line-height: 1.8;
+        background: #222;
+        padding: 15px;
+        border-radius: 10px;
+        position: absolute;
+        bottom: 20px;
+    }
+
+    /* 마키(흐르는 자막) 애니메이션 */
+    .marquee-wrapper {
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        background: #222;
+        margin: 20px 0;
+        padding: 15px 0;
+        position: absolute;
+        bottom: 100px;
+    }
+
+    .marquee-content {
+        display: inline-block;
+        animation: smooth-loop 20s linear infinite;
+
+    }
+    .marquee-slow-content {
+        display: inline-block;
+        animation: smooth-loop 40s linear infinite;
+    }
+
+    @keyframes smooth-loop {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+
+    .minimal-goals {
+        list-style: none;
+        padding: 20px;
+        border: 2px dashed #000000;
+        border-radius: 20px;
+        display: inline-block;
+    }
+
+    .minimal-goals li {
+        position: relative;
+        padding-left: 30px;
+        margin-bottom: 12px;
+        font-size: 1.05rem;
+        color: #ffffff;
+        line-height: 1.6;
+    }
+
+    .minimal-goals li::before {
+        content: '✔';
+        position: absolute;
+        left: 0;
+        color: #66bb6a;
+        font-weight: bold;
+    }
+
+    .minimal-goals li:last-child {
+        margin-bottom: 0;
+    }
+
+    .title-badge {
+        display: inline-block;
+        background: #66bb6a;
+        color: rgb(0, 0, 0);
+        padding: 5px 15px;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+    .mainlearningtitle {
+        display: inline-block;
+        background: #246c27;
+        color: rgb(0, 0, 0);
+        padding: 5px 15px;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+    .mainlearning {
+        list-style:upper-roman;
+        padding: 20px;
+        border: 2px solid #ffffff;
+        border-radius: 20px;
+        display: inline-block;
+        margin-right: 20px;
+    }
+
+    #after-school-btn {
+        background: #ffffff;
+        color: rgb(0, 0, 0);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s ease-in-out;
+    }
+
+    .myafterschooltest button {
+        background: #ffffff;
+        color: rgb(0, 0, 0);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s ease-in-out;
+    }
+
+
+    .graph-background {
+        width: fit-content;
+
+        padding: 20px;
+
+        margin: 30px auto;
+
+        background: rgba(120, 120, 120, 0.18);
+
+        border-radius: 24px;
+
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+
+        box-shadow:
+            0 8px 24px rgba(0,0,0,0.15),
+            inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+
+    #result-graph {
+        display: block;
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* =========================
+   모바일 최적화
+========================= */
+    @media screen and (max-width: 768px) {
+
+        body {
+            overflow-x: hidden;
+        }
+
+        /* 네비게이션 */
+        .navbar {
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .nav-links {
+            width: 100%;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .nav-links li {
+            list-style: none;
+        }
+
+        .nav-links button {
+            font-size: 0.9rem;
+            padding: 8px 12px;
+            border-radius: 10px;
+
+        }
+
+        /* 공통 섹션 */
+        .content-section {
+            padding: 20px 15px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            line-height: 1.3;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+        }
+
+        p {
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* 마키 */
+        .marquee-wrapper {
+            padding: 10px 0;
+            position: absolute;
+            bottom: 100px;
+            
+        }
+
+        .marquee-content,
+        .marquee-slow-content {
+            font-size: 0.9rem;
+            
+        }
+
+        /* 급식 */
+        #meal {
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 0.95rem;
+            overflow-wrap: break-word;
+            position: absolute;
+            bottom: 20px;
+        }
+
+        #meal h2 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        /* 교육 목표 */
+        .minimal-goals {
+            width: 100%;
+            padding: 18px;
+        }
+
+        .minimal-goals li {
+            font-size: 0.95rem;
+            padding-left: 24px;
+        }
+
+        /* 주요 교육 활동 */
+        .mainlearning {
+            width: 100%;
+            display: block;
+            margin-right: 0;
+            margin-bottom: 20px;
+            padding: 18px;
+        }
+
+        .mainlearning li {
+            margin-bottom: 10px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        /* 버튼 */
+        #after-school-btn,
+        .myafterschooltest button {
+            width: 100%;
+            padding: 14px;
+            font-size: 1rem;
+            border-radius: 12px;
+        }
+
+        /* 질문 카드 */
+        #q1, #q2, #q3, #q4, #q5,
+        #q6, #q7, #q8, #q9 {
+            background: #1b1b1b;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        #q1 p, #q2 p, #q3 p, #q4 p, #q5 p,
+        #q6 p, #q7 p, #q8 p, #q9 p {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        input[type="radio"] {
+            transform: scale(1.3);
+            margin-right: 10px;
+            margin-top: 12px;
+        }
+
+        /* 결과 영역 */
+        #after-school-result {
+            text-align: center;
+        }
+
+        #result {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 15px;
+            line-height: 1.5;
+        }
+
+        /* 캔버스 */
+        canvas {
+            width: 100% !important;
+            max-width: 350px;
+            height: auto !important;
+            margin-top: 20px;
+        }
+
+        /* 뱃지 */
+        .title-badge,
+        .mainlearningtitle {
+            font-size: 0.8rem;
+            padding: 5px 12px;
+        }
+
+        /* hr */
+        hr {
+            opacity: 0.2;
+        }
+    }
+
+    /* =========================
+    초소형 모바일
+    ========================= */
+    @media screen and (max-width: 480px) {
+
+        .logo {
+            font-size: 1.1rem;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.2rem;
+        }
+
+        p,
+        li,
+        button {
+            font-size: 0.9rem;
+            
+        }
+
+        .nav-links {
+            gap: 8px;
+        }
+
+        .nav-links button {
+            width: 100%;
+        }
+
+        .minimal-goals,
+        .mainlearning {
+            padding: 15px;
+            border-radius: 15px;
+        }
+
+        #meal {
+            font-size: 0.9rem;
+        }
+
+        canvas {
+            max-width: 280px;
+        }
+    }
+
+    .faq-container {
+        max-width: 800px;
+        margin: 20px auto;
+        font-family: 'Pretendard', sans-serif;
+        border-top: 2px solid #2c3e50;
+    }
+
+    /* 개별 질문 아이템 */
+    .faq-item {
+        border-bottom: 1px solid #000000;
+    }
+
+    /* 숨겨진 체크박스 */
+    .faq-input {
+        display: none;
+    }
+
+    /* 질문 제목 스타일 */
+    .faq-question {
+        display: block;
+        padding: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        background: #fff;
+        position: relative;
+        transition: background 0.3s;
+        color:#000
+    }
+
+    .faq-question:hover {
+        background: #f9f9f9;
+    }
+
+    /* 화살표 아이콘 */
+    .faq-question::after {
+        content: '▼';
+        position: absolute;
+        right: 20px;
+        font-size: 12px;
+        color: #888;
+    }
+
+    /* 답변 스타일 (기본적으로 숨김) */
+    .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        background: #fdfdfd;
+        transition: max-height 0.3s ease-out;
+    }
+
+    .faq-answer p {
+        padding: 20px;
+        margin: 0;
+        line-height: 1.6;
+        color: #555;
+    }
+
+    /* 체크 시 답변 펼치기 및 화살표 회전 */
+    .faq-input:checked ~ .faq-answer {
+        max-height: 500px; /* 답변 길이에 따라 조절 가능 */
+    }
+
+    .faq-input:checked ~ .faq-question::after {
+        content: '▲';
+        color: #2c3e50;
+    }
+
+    .faq-input:checked ~ .faq-question {
+        color: #2c3e50;
+        background: #f0f7ff;
+    }
+
+    .timer-container {
+        background: white;
+        padding: 40px;
+        text-align: center;
+        border-radius: 24px;
+
+
+    }
+
+    h2 { margin-bottom: 30px; color: var(--text); font-weight: 700; }
+
+    /* 입력 영역 스타일 */
+    .input-group {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 30px;
+    }
+
+    .input-box {
+        display: flex;
+        flex-direction: column;
+        width: 30%;
+    }
+
+    .input-box label {
+        font-size: 12px;
+        color: #6f6f6f;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+    }
+
+    .input-box input {
+        padding: 12px;
+        border: 2px solid #777777;
+        border-radius: 12px;
+        text-align: center;
+        font-size: 1.1rem;
+        outline: none;
+        transition: border-color 0.3s;
+    }
+
+    .input-box input:focus {
+        border-color: var(--primary);
+    }
+
+    /* 시간 표시부 */
+    .timer-display {
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: #000;
+        font-variant-numeric: tabular-nums;
+        margin: 20px 0;
+        letter-spacing: -1px;
+        
+    }
+
+    /* 버튼 스타일 */
+    .start-btn {
+        width: 100%;
+        background: var(--primary);
+        color: rgb(74, 74, 74);
+        border: none;
+        padding: 15px;
+        border-radius: 12px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .start-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .start-btn:active { transform: translateY(1px); }
+    .start-btn:disabled { background: #dfe6e9; cursor: not-allowed; }
+
+    #lh-timer-btn {
+        color:#000;
+        border:none;
+        padding:15px;
+        border-radius: 12px;
+    }
+
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="logo">고실초등학교</div>
+    <ul class="nav-links">
+        <li><button onclick="changeState('home')">홈</button></li>
+        <li><button onclick="changeState('gosil-learn')">고실교육</button></li>
+        <li><button onclick="changeState('my-after-school')">나의 방과후 찾기</button></li>
+        <li><button onclick="changeState('school-facilities')">학교 시설 소개</button></li>
+        <li><button onclick="changeState('faq')">자주 묻는 질문</button></li>
+        <li><button onclick="changeState('learninghelper')">학습 도우미</button></li>
+    </ul>
+</nav>
+
+<!-- 홈 섹션 -->
+<div class="home content-section">
+    <h1>고실초등학교</h1>
+    <p>학생분들이 직접 남겨주신 우리 학교의 좋은 점</p>
+    
+    <div class="marquee-wrapper">
+        <div class="marquee-content">
+            <span>김로운: 다양한 시설이 있어서 좋다 &nbsp;&nbsp;</span>
+            <span>김주헌: 급식맛있음 &nbsp;&nbsp;</span>
+            <span>정세은: 운동장이넓다. 선생님이 좋다. 학교에서 뭘 하는게 많아서 좋다.&nbsp;&nbsp;</span>
+            <span>김다인: 선생님들도 다 친절하시고 시설도 좋고 운동장도 넓고 너무 좋아요 !! &nbsp;&nbsp;</span>
+            <span>전성훈: 행..사같은 걸 많이 해서...? &nbsp;&nbsp;</span>
+            <!-- 반복을 위해 동일 내용 복사 -->
+            <span>김로운: 다양한 시설이 있어서 좋다 &nbsp;&nbsp;</span>
+            <span>김주헌: 급식맛있음 &nbsp;&nbsp;</span>
+            <span>정세은: 운동장이넓다. 선생님이 좋다. 학교에서 뭘 하는게 많아서 좋다.&nbsp;&nbsp;</span>
+            <span>김다인: 선생님들도 다 친절하시고 시설도 좋고 운동장도 넓고 너무 좋아요 !! &nbsp;&nbsp;</span>
+            <span>전성훈: 행..사같은 걸 많이 해서...? &nbsp;&nbsp;</span> <br>
+            <!-- 2줄 만들기-->
+        </div>
+        <br>
+        <div class="marquee-slow-content">
+            <span>김로운: 다양한 시설이 있어서 좋다 &nbsp;&nbsp;</span>
+            <span>김주헌: 급식맛있음 &nbsp;&nbsp;</span>
+            <span>정세은: 운동장이넓다. 선생님이 좋다. 학교에서 뭘 하는게 많아서 좋다.&nbsp;&nbsp;</span>
+            <span>김다인: 선생님들도 다 친절하시고 시설도 좋고 운동장도 넓고 너무 좋아요 !! &nbsp;&nbsp;</span>
+            <span>전성훈: 행..사같은 걸 많이 해서...? &nbsp;&nbsp;</span>
+            <!-- 반복을 위해 동일 내용 복사 -->
+            <span>김로운: 다양한 시설이 있어서 좋다 &nbsp;&nbsp;</span>
+            <span>김주헌: 급식맛있음 &nbsp;&nbsp;</span>
+            <span>정세은: 운동장이넓다. 선생님이 좋다. 학교에서 뭘 하는게 많아서 좋다.&nbsp;&nbsp;</span>
+            <span>김다인: 선생님들도 다 친절하시고 시설도 좋고 운동장도 넓고 너무 좋아요 !! &nbsp;&nbsp;</span>
+            <span>전성훈: 행..사같은 걸 많이 해서...? &nbsp;&nbsp;</span>
+        </div> 
+    </div>
+    <br>
+    <div id="meal">급식을 불러오는 중...</div>
+</div>
+
+<!-- 고실교육 섹션 -->
+<div class="gosil-learn content-section">
+    <h1>고실 교육</h1>
+    <hr>
+    <br> <br>
+    <div>
+        <span class="title-badge">교육 목표</span> <br>
+        <ul class="minimal-goals">
+            <li>깊이 생각하고 스스로 공부하는 창의적인 어린이</li>
+            <li>예절바르고 질서를 잘 지키는 어린이</li>
+            <li>특기와 재능을 지닌 꿈이 있는 어린이</li>
+            <li>가정과 학교 이웃을 사랑하는 어린이</li>
+        </ul>
+    </div>
+    <br> 
+    <hr>
+    <br>
+    <div>
+        <span class="title-badge">노력중점</span> <br>
+        <ul class="minimal-goals">
+            <li>배움 중심의 창의성 교육</li>
+            <li>존중과 배려가 넘치는 인성 교육</li>
+            <li>꿈과 적성을 키우는 진로·문화예술교육</li>
+            <li>소통과 참여로 함께하는 교육</li>
+        </ul>
+    </div>
+    <br>
+    <hr>
+    <br>
+    <div>
+        <span class="mainlearningtitle">주요 교육 활동</span> <br>
+        <ul class="mainlearning">
+            <li>역량중심 교육과정 운영</li>
+            <li>학생맞춤형 교육</li>
+            <li>독서·인문학 교육</li>
+            <li>교직원 역량 강화</li>
+        </ul>
+        <ul class="mainlearning">
+            <li>창의인성교육</li>
+                
+            <li>-1교 1인성 브랜드: 존중과 배려</li>
+                
+            
+            <li>민주시민교육 내실화</li>
+            <li>학생 생활교육</li>
+            <li>체육 교육</li>
+        </ul>
+        <ul class="mainlearning">
+            <li>창의융합형 과학교육</li>
+            <li>정보활용 교육</li>
+            <li>문화예술교육의 내실화</li>
+            <li>학생맞춤형 진로교육</li>
+        </ul>
+        <ul class="mainlearning">
+            <li>학교 자치 활성화</li>
+            <li>기후환경, 생태 교육</li>
+            <li>보편적 교육 복지</li>
+            <li>학교 안전망 강화</li>
+        </ul>
+    </div>
+</div>
+
+<!-- 나의 방과후 찾기 섹션 -->
+<div class="my-after-school content-section">
+    <div class="my-after-schooldiscr" style="display: block;">
+        <h1>나의 방과후 찾기</h1> <br> <br>
+        <button id = "after-school-btn" onclick="startAfterSchool()">내 특성 검사 시작해보기</button>
+        <br>
+        <br>
+        <p> <strong>나의 방과후 찾기란?</strong></p>
+        <hr>
+        <p>나의 방과후 찾기는 학생들이 자신의 흥미와 적성에 맞는 방과후 활동을 찾을 수 있도록 도와주는 프로그램입니다. 간단한 특성 검사를 통해 학생들은 자신에게 가장 잘 맞는 방과후 활동을 추천받을 수 있습니다.</p>
+    </div> 
+    <div class="myafterschooltest" style="display: none;">
+        <h2>특성 검사</h2>
+        <div id="q1">
+            <p>1. 과학에 관심이 많다.</p>
+            <input type="radio" name="q1" value="5"> 매우 그렇다<br>
+            <input type="radio" name="q1" value="4"> 그렇다<br>
+            <input type="radio" name="q1" value="3"> 보통이다<br>
+            <input type="radio" name="q1" value="2"> 그렇지 않다<br>
+            <input type="radio" name="q1" value="1"> 전혀 그렇지 않다<br>
+            <br>
+            <button onclick="goToQuestion(2)">다음</button>
+        </div>
+        <div id = "q2" style="display: none;">
+            <p>2. 예술 활동을 즐긴다.</p>
+            <input type="radio" name="q2" value="5"> 매우 그렇다<br>
+            <input type="radio" name="q2" value="4"> 그렇다<br>
+            <input type="radio" name="q2" value="3"> 보통이다<br>
+            <input type="radio" name="q2" value="2"> 그렇지 않다<br>
+            <input type="radio" name="q2" value="1"> 전혀 그렇지 않다<br>
+            <br>
+            <button onclick="goToQuestion(3)">다음</button>
+        </div>
+        <div id = "q3" style="display: none;">
+            <p>3. 스포츠 활동을 좋아한다.</p>
+            <input type="radio" name="q3" value="5"> 매우 그렇다<br>
+            <input type="radio" name="q3" value="4"> 그렇다<br>
+            <input type="radio" name="q3" value="3"> 보통이다<br>
+            <input type="radio" name="q3" value="2"> 그렇지 않다<br>
+            <input type="radio" name="q3" value="1"> 전혀 그렇지 않다<br>
+            <br>
+            <button onclick="goToQuestion(4)">다음</button>
+        </div>
+        <div id = "q4" style="display: none;">
+            <p>4. 음악 활동을 좋아한다.</p>
+            <input type="radio" name="q4" value="5"> 매우 그렇다<br>
+            <input type="radio" name="q4" value="4"> 그렇다<br>
+            <input type="radio" name="q4" value="3"> 보통이다<br>
+            <input type="radio" name="q4" value="2"> 그렇지 않다<br>
+            <input type="radio" name="q4" value="1"> 전혀 그렇지 않다<br>
+            <br>
+            <button onclick="goToQuestion(5)">다음</button>
+        </div>
+        <div id = "q5" style="display: none;">
+            <p>5. 전자기기나 컴퓨터에 관심이 많다.</p>
+            <input type="radio" name="q5" value="5"> 매우 그렇다<br>
+            <input type="radio" name="q5" value="4"> 그렇다<br>
+            <input type="radio" name="q5" value="3"> 보통이다<br>
+            <input type="radio" name="q5" value="2"> 그렇지 않다<br>
+            <input type="radio" name="q5" value="1"> 전혀 그렇지 않다<br>
+            <br>
+            <button onclick="goToQuestion(6)">다음</button>
+        </div>
+        <div id = "q6" style="display: none;">
+            <p>6. 외국어에 관심이 많다.</p>
+            <input type="radio" name="q6" value="5"> 매우 그렇다<br>
+            <input type="radio" name="q6" value="4"> 그렇다<br>
+            <input type="radio" name="q6" value="3"> 보통이다<br>
+            <input type="radio" name="q6" value="2"> 그렇지 않다<br>
+            <input type="radio" name="q6" value="1"> 전혀 그렇지 않다<br>
+            <br>
+            <button onclick="goToQuestion(7)">다음</button>
+        </div>    
+        <div id = "q7" style="display: none;">
+            <p>7. 수학에 관심이 많다.</p>
+            <input type="radio" name="q7" value="5"> 매우 그렇다<br>
+            <input type="radio" name="q7" value="4"> 그렇다<br>
+            <input type="radio" name="q7" value="3"> 보통이다<br>
+            <input type="radio" name="q7" value="2"> 그렇지 않다<br>
+            <input type="radio" name="q7" value="1"> 전혀 그렇지 않다<br>
+            <br>
+            <button onclick="goToQuestion(8)">다음</button>
+        </div>
+        <div id = "q8" style="display: none;">
+            <p>8. 논리적 사고와 문제 해결을 좋아한다.</p>
+            <input type="radio" name="q8" value="5"> 매우 그렇다<br>
+            <input type="radio" name="q8" value="4"> 그렇다<br>
+            <input type="radio" name="q8" value="3"> 보통이다<br>
+            <input type="radio" name="q8" value="2"> 그렇지 않다<br>
+            <input type="radio" name="q8" value="1"> 전혀 그렇지 않다<br>
+            <br>
+            <button onclick="goToQuestion(9)">다음</button>
+        </div>
+        <div id = "q9" style="display: none;">
+            <p>9. 책 읽기를 좋아한다.</p>
+            <input type="radio" name="q9" value="5"> 매우 그렇다<br>
+            <input type="radio" name="q9" value="4"> 그렇다<br>
+            <input type="radio" name="q9" value="3"> 보통이다<br>
+            <input type="radio" name="q9" value="2"> 그렇지 않다<br>
+            <input type="radio" name="q9" value="1"> 전혀 그렇지 않다<br>
+            <br>
+            <button onclick="goToQuestion(376)">다음</button>
+        </div>
+    </div>
+    <div id = "after-school-result" class="after-school-result" style="display: none;">
+        <h1>검사 결과</h1>
+        <br>
+        <hr>
+        <br>
+
+        <p>당신에게 맞는 방과후 활동:</p>
+        <p id="result"></p>
+
+        <!-- 그래프 배경 박스 -->
+        <div class="graph-background">
+            <canvas id="result-graph" width="400" height="400"></canvas>
+        </div>
+
+        <button onclick = "changeState('home')">돌아가기</button>
+    </div>
+</div>
+
+
+
+<div class ="school-facilities content-section" style="display: none;">
+    <h1>학교 시설 소개</h1>
+    <br> <br>
+
+    <img src="images/스크린샷 2026-05-10 200907.png" alt="교실 배치도" style="width : 100%; height:auto;">
+    
+</div>
+
+<div class ="faq content-section" style="display: none;">
+    <h1>자주 묻는 질문</h1>
+    <div class="faq-container">
+        <h2 style="text-align: center; margin-bottom: 30px;">고실초등학교 자주 묻는 질문</h2>
+
+        <div class="faq-item">
+            <input type="checkbox" id="faq1" class="faq-input">
+            <label for="faq1" class="faq-question">Q1. 등교 시간은 언제까지인가요?</label>
+            <div class="faq-answer">
+                <p>보통 오전 8시 40분까지 교실에 입실해야 합니다. (학년별 상황에 따라 탄력적으로 운영될 수 있으니 가정통신문을 꼭 확인해 주세요.)</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <input type="checkbox" id="faq2" class="faq-input">
+            <label for="faq2" class="faq-question">Q2. 방과후 학교 프로그램은 어떻게 신청하나요?</label>
+            <div class="faq-answer">
+                <p>분기별로 학교 홈페이지나 스마트 공지 앱(e알리미 등)을 통해 신청 기간을 공지합니다. 인기 강좌는 선착순 또는 추첨으로 선발됩니다.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <input type="checkbox" id="faq3" class="faq-input">
+            <label for="faq3" class="faq-question">Q3. 돌봄 교실 대상자와 신청 시기는 언제인가요?</label>
+            <div class="faq-answer">
+                <p>주로 저학년(1~2학년) 맞벌이 부부 자녀를 우선순위로 선정하며, 매 학년 초(1~2월경)에 집중 신청을 받습니다.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <input type="checkbox" id="faq4" class="faq-input">
+            <label for="faq4" class="faq-question">Q4. 학교 급식 식단표는 어디서 확인하나요?</label>
+            <div class="faq-answer">
+                <p>학교 홈페이지의 [급식 게시판] 또는 학교 소식지 앱을 통해 월간 식단표와 영양 정보, 원산지 표시를 매일 확인하실 수 있습니다.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <input type="checkbox" id="faq5" class="faq-input">
+            <label for="faq5" class="faq-question">Q5: 주차 공간이 있나요?</label>
+            <div class="faq-answer">
+                <p>학교 내 주차장은 교직원 및 방문객 전용입니다. 등하교 시 학생들의 안전을 위해 학교 정문 및 후문 앞 자가용 하차는 삼가 주셔야 합니다.</p>
+            </div>
+        </div>
+        <div class="faq-item">
+            <input type="checkbox" id="faq6" class="faq-input">
+            <label for="faq6" class="faq-question">Q6: 체험학습(가정학습) 신청은 어떻게 하나요?</label>
+            <div class="faq-answer">
+                <p>체험학습 실시 3일 전까지 담임 선생님께 신청서를 제출해야 하며, 종료 후 7일 이내에 결과 보고서를 제출해야 출석으로 인정됩니다. 연간 허용 일수를 사전에 확인하세요.</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class ="learninghelper content-section" style="display: none;">
+    <h1>학습 도우미</h1>
+    <hr>
+    <div id = "lhmenu" style="display: block;">
+        <button id = "lh-timer-btn" onclick="changelhUI('timer')">타이머</button>
+    </div>
+    <div id = "timer" style="display:none">
+        <div class="timer-container">
+            <h2>Timer</h2>
+            
+            <div class="input-group">
+                <div class="input-box">
+                    <label>Hours</label>
+                    <input type="number" id="h" min="0" placeholder="0">
+                </div>
+                <div class="input-box">
+                    <label>Min</label>
+                    <input type="number" id="m" min="0" max="59" placeholder="0">
+                </div>
+                <div class="input-box">
+                    <label>Sec</label>
+                    <input type="number" id="s" min="0" max="59" placeholder="0">
+                </div>
+            </div>
+
+            <div class="timer-display">00:00:00</div>
+            
+            <button class="start-btn" onclick="initTimer()">START</button>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+const API_KEY = "1ba42b01e9214fafb56f278a504ce88d";
+const ATPT_OFCDC_SC_CODE = "F10";
+const SD_SCHUL_CODE = "7401206";
+
+// 1. let으로 선언하여 변경 가능하게 수정
+let state = 'home';
+
+let lhmenustate = 'menu';
+
+let scienceweight = 0;
+let artweight = 0;
+let sportsweight = 0;
+let musicweight = 0;
+let electronicsweight = 0;
+let languageweight = 0;
+let mathweight = 0;
+let logicweight = 0;
+let koreanweight = 0;
+let isteststarted = false;
+
+let timerInterval;
+
+
+let weight = [scienceweight, artweight, sportsweight, musicweight, electronicsweight, languageweight, mathweight, logicweight, koreanweight
+];
+
+
+
+async function loadMeal(){
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = String(today.getMonth()+1).padStart(2,"0");
+    const d = String(today.getDate()).padStart(2,"0");
+    const date = `${y}${m}${d}`;
+
+    const url = `https://open.neis.go.kr/hub/mealServiceDietInfo?KEY=${API_KEY}&Type=json&ATPT_OFCDC_SC_CODE=${ATPT_OFCDC_SC_CODE}&SD_SCHUL_CODE=${SD_SCHUL_CODE}&MLSV_YMD=${date}`;
+
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        if(data.mealServiceDietInfo) {
+            const mealData = data.mealServiceDietInfo[1].row[0];
+            let meal = mealData.DDISH_NM.replace(/<br\/>/g,"<br>");
+            document.getElementById("meal").innerHTML = `
+                <h2>오늘의 급식 (${mealData.MMEAL_SC_NM})</h2>
+                <p>${meal}</p>
+            `;
+        } else {
+            document.getElementById("meal").innerHTML = "오늘은 급식 정보가 없습니다.";
+        }
+    } catch(err) {
+        document.getElementById("meal").innerHTML = "급식을 불러오지 못했습니다.";
+    }
+}
+
+// 2. 상태 변경 후 UI 업데이트 함수를 실행해야 함
+function changeState(newState){
+    isteststarted = false;
+    state = newState;
+    resetAfterSchool();
+    console.log("State changed to:", state);
+    console.log(isteststarted);
+    updateUI();
+}
+
+function startAfterSchool(){
+
+    isteststarted = true;
+
+    const afterschooldiv = document.querySelector('.my-after-schooldiscr');
+    const afterschooltestdiv = document.querySelector('.myafterschooltest');
+    const afterschoolresult = document.querySelector('.after-school-result');
+
+    afterschooltestdiv.style.display = 'block';
+    afterschooldiv.style.display = 'none';
+    afterschoolresult.style.display = 'none';
+}
+function resetAfterSchool() {
+
+    scienceweight = 0;
+    artweight = 0;
+    sportsweight = 0;
+    musicweight = 0;
+    electronicsweight = 0;
+    languageweight = 0;
+    mathweight = 0;
+    logicweight = 0;
+    koreanweight = 0;
+    weight = [];
+
+    isteststarted = false;
+
+    // 결과 숨기기
+    document.getElementById('after-school-result').style.display = 'none';
+
+    // 설명 화면 보이기
+    document.querySelector('.my-after-schooldiscr').style.display = 'block';
+
+    // 테스트 숨기기
+    document.querySelector('.myafterschooltest').style.display = 'none';
+    document.querySelector('.after-school-result').style.display = 'none';
+
+    // 모든 질문 초기화
+    for(let i = 1; i <= 9; i++) {
+
+        const q = document.getElementById(`q${i}`);
+
+        // 첫 질문만 보이기
+        q.style.display = (i === 1) ? 'block' : 'none';
+
+        // 라디오 선택 해제
+        const radios = document.querySelectorAll(`input[name="q${i}"]`);
+
+        radios.forEach(radio => {
+            radio.checked = false;
+        });
+    }
+
+    // 결과 텍스트 초기화
+    document.getElementById('result').innerText = '';
+
+    // 캔버스 초기화
+    const canvas = document.getElementById('result-graph');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function goToQuestion(num) {
+
+    // 현재 몇 번 질문인지 확인 (num이 2면 현재 1번 질문을 처리 중)
+    const currentNum = (num === 376) ? 9 : num - 1;
+    const selected = document.querySelector(`input[name="q${currentNum}"]:checked`);
+
+    if (!selected) {
+        alert("답변을 선택해주세요!");
+        return;
+    }
+
+    // 선택된 점수 가져오기 (문자열을 숫자로 변환)
+    const score = parseInt(selected.value);
+
+    // 질문 번호에 따라 해당 가중치 변수에 점수 추가
+    switch(currentNum) {
+        case 1: scienceweight += score; break;
+        case 2: artweight += score; break;
+        case 3: sportsweight += score; break;
+        case 4: musicweight += score; break;
+        case 5: electronicsweight += score; break;
+        case 6: languageweight += score; break;
+        case 7: mathweight += score; break;
+        case 8: logicweight += score; break;
+        case 9: koreanweight += score; break;
+    }
+
+    console.log(`현재 가중치 현황: 과학(${scienceweight}), 예술(${artweight}), 운동(${sportsweight}), 음악(${musicweight}), 전자(${electronicsweight}), 언어(${languageweight}), 수학(${mathweight}), 논리(${logicweight}), 국어(${koreanweight})`);
+
+    // 마지막 질문 처리
+    if (num === 376) {
+        const afterschooldiv = document.querySelector('.my-after-schooldiscr');
+        const afterschooltestdiv = document.querySelector('.myafterschooltest');
+
+        const resultDiv = document.getElementById("after-school-result");
+        resultDiv.style.display = 'block';
+        afterschooltestdiv.style.display = 'none';
+        afterschooldiv.style.display = 'none';
+        //alert(`검사 완료!\n최종 가중치:\n과학: ${scienceweight}\n예술: ${artweight}\n운동: ${sportsweight}\n음악: ${musicweight}\n전자: ${electronicsweight}\n언어: ${languageweight}`);
+        const resultList = [];
+
+        // 최고 점수 찾기
+        const maxScore = Math.max(
+            scienceweight,
+            artweight,
+            sportsweight,
+            musicweight,
+            electronicsweight,
+            languageweight,
+            mathweight,
+            logicweight,
+            koreanweight
+        );
+
+        // 최고 점수를 가진 분야들 추가
+        if(scienceweight === maxScore){
+            resultList.push("과학탐구, 드론항공과학");
+        }
+
+        if(artweight === maxScore){
+            resultList.push("미술회화, 클레이공예, 원목건축놀이");
+        }
+
+        if(sportsweight === maxScore){
+            resultList.push("음악줄넘기, 배드민턴, 방송댄스");
+        }
+
+        if(musicweight === maxScore){
+            resultList.push("플루트, 통기타, 바이올린");
+        }
+
+        if(electronicsweight === maxScore){
+            resultList.push("로봇과학, 컴퓨터");
+        }
+
+        if(languageweight === maxScore){
+            resultList.push("한자, 중국어, 영어회화");
+        }
+
+        if(mathweight === maxScore){
+            resultList.push("주산암산, 창의수학");
+        }
+
+        if(logicweight === maxScore){
+            resultList.push("바둑");
+        }
+
+        if(koreanweight === maxScore){
+            resultList.push("독서논술");
+        }
+
+        // 결과 출력
+        if(resultList.length >= 4){
+            document.getElementById("result").innerText =
+            "여러 분야에 관심이 많으시네요!\n다양한 방과후 활동을 시도해보세요!";
+        } else {
+            document.getElementById("result").innerText =
+            resultList.join("\n");
+        }
+        weight = [];
+        weight = [
+            scienceweight * 20, 
+            artweight * 20, 
+            sportsweight * 20, 
+            musicweight * 20, 
+            electronicsweight * 20, 
+            languageweight * 20, 
+            mathweight * 20, 
+            logicweight * 20, 
+            koreanweight * 20
+        ];
+        let labels = ['과학', '예술', '운동', '음악', '전자', '언어', '수학', '논리', '국어'];
+        drawNonagonGraphWithLabels(weight, labels, 'result-graph', 100);
+        return;
+    }
+
+    // 다음 질문 화면으로 전환
+    const currentQ = document.getElementById(`q${currentNum}`);
+    const nextQ = document.getElementById(`q${num}`);
+    if (currentQ) currentQ.style.display = 'none';
+    if (nextQ) nextQ.style.display = 'block';
+    weight = [];
+}
+
+
+// 3. visibility 대신 display를 사용하는 것이 레이아웃 관리에 좋습니다.
+function updateUI(){
+    const homeSection = document.querySelector('.home');
+    const learnSection = document.querySelector('.gosil-learn');
+    const afterSchoolSection = document.querySelector('.my-after-school');
+    const schoolFacilitiesSection = document.querySelector('.school-facilities');
+    const faqSection = document.querySelector('.faq');
+    const learningHelperSection = document.querySelector('.learninghelper');
+
+    if(state === 'home'){
+        homeSection.style.display = 'block';
+        learnSection.style.display = 'none';
+        afterSchoolSection.style.display = 'none';
+        schoolFacilitiesSection.style.display = 'none';
+        faqSection.style.display = 'none';
+        learningHelperSection.style.display = 'none';
+    } else if(state === 'gosil-learn'){
+        homeSection.style.display = 'none';
+        learnSection.style.display = 'block';
+        afterSchoolSection.style.display = 'none';
+        schoolFacilitiesSection.style.display = 'none';
+        faqSection.style.display = 'none';
+        learningHelperSection.style.display = 'none';
+    } else if(state === 'my-after-school'){
+        homeSection.style.display = 'none';
+        learnSection.style.display = 'none';
+        afterSchoolSection.style.display = 'block';
+        schoolFacilitiesSection.style.display = 'none';
+        faqSection.style.display = 'none';
+        learningHelperSection.style.display = 'none';
+    } else if(state === 'school-facilities') {
+        homeSection.style.display = 'none';
+        learnSection.style.display = 'none';
+        afterSchoolSection.style.display = 'none';
+        schoolFacilitiesSection.style.display = 'block';
+        faqSection.style.display = 'none';
+        learningHelperSection.style.display = 'none';
+    } else if(state === 'faq') {
+        homeSection.style.display = 'none';
+        learnSection.style.display = 'none';
+        afterSchoolSection.style.display = 'none';
+        schoolFacilitiesSection.style.display = 'none';
+        faqSection.style.display = 'block';
+        learningHelperSection.style.display = 'none';
+    } else if(state === 'learninghelper') {
+        homeSection.style.display = 'none';
+        learnSection.style.display = 'none';
+        afterSchoolSection.style.display = 'none';
+        schoolFacilitiesSection.style.display = 'none';
+        faqSection.style.display = 'none';
+        learningHelperSection.style.display = 'block';
+    }
+
+}
+
+/**
+ * @param {Array} data - 9개의 숫자 배열 (0~100)
+ * @param {Array} labels - 9개의 문자열 배열
+ * @param {string} canvasId - HTML canvas ID
+ * @param {number} maxValue - 데이터의 최대값 (기본값: 100)
+ */
+function drawNonagonGraphWithLabels(data, labels, canvasId, maxValue = 100) {
+    const canvas = document.getElementById(canvasId);
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const maxRadius = (Math.min(width, height) / 2) * 0.7; // 레이블 공간을 위해 70%로 축소
+    const sides = 9;
+
+    ctx.clearRect(0, 0, width, height);
+
+    // 1. 가이드라인 및 축 그리기
+    ctx.strokeStyle = '#e0e0e0';
+    ctx.beginPath();
+    for (let i = 0; i <= sides; i++) {
+        const angle = (i * 2 * Math.PI) / sides - Math.PI / 2;
+        const x = centerX + maxRadius * Math.cos(angle);
+        const y = centerY + maxRadius * Math.sin(angle);
+        
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+
+        // 중심에서 뻗어나가는 축 선
+        if (i < sides) {
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(x, y);
+        }
+    }
+    ctx.stroke();
+
+    // 2. 레이블(텍스트) 그리기
+    ctx.font = '14px Arial';
+    ctx.fillStyle = '#000';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    for (let i = 0; i < sides; i++) {
+        const angle = (i * 2 * Math.PI) / sides - Math.PI / 2;
+        // 글자는 그래프보다 조금 더 바깥에 위치 (maxRadius * 1.2)
+        const labelX = centerX + (maxRadius * 1.2) * Math.cos(angle);
+        const labelY = centerY + (maxRadius * 1.2) * Math.sin(angle);
+        
+        ctx.fillText(labels[i] || '', labelX, labelY);
+    }
+
+    // 3. 데이터 영역 그리기
+    ctx.beginPath();
+    for (let i = 0; i <= sides; i++) {
+        const value = data[i % sides] || 0;
+        const ratio = value / maxValue;
+        const angle = (i * 2 * Math.PI) / sides - Math.PI / 2;
+        const x = centerX + (maxRadius * ratio) * Math.cos(angle);
+        const y = centerY + (maxRadius * ratio) * Math.sin(angle);
+        
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+
+    ctx.fillStyle = 'rgba(255, 99, 132, 0.4)'; // 붉은 계열 색상
+    ctx.fill();
+    ctx.strokeStyle = 'rgb(255, 99, 132)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+}
+
+function startTimer(h, m, s, className) {
+    const display = document.querySelector(`.${className}`);
+    const btn = document.querySelector('.start-btn');
+    
+    // 기존 타이머가 실행 중이면 초기화
+    clearInterval(timerInterval);
+    
+    let totalSeconds = (parseInt(h || 0) * 3600) + (parseInt(m || 0) * 60) + parseInt(s || 0);
+    if (totalSeconds <= 0) {
+        alert("시간을 설정해주세요!");
+        return;
+    }
+    btn.disabled = true; // 시작 시 버튼 비활성화
+    timerInterval = setInterval(() => {
+        if (totalSeconds <= 0) {
+            clearInterval(timerInterval);
+            display.textContent = "00:00:00";
+
+            btn.disabled = false;
+            setTimeout(() => {
+   
+                alert("🔔 시간이 모두 소요되었습니다!");
+            }, 100);
+            return;
+        }
+        totalSeconds--;
+        const hrs = Math.floor(totalSeconds / 3600);
+        const mins = Math.floor((totalSeconds % 3600) / 60);
+        const secs = totalSeconds % 60;
+        const format = (num) => String(num).padStart(2, '0');
+        display.textContent = `${format(hrs)}:${format(mins)}:${format(secs)}`;
+    }, 1000);
+}
+// 버튼 클릭 시 입력값을 가져와 함수 실행
+function initTimer() {
+    const h = document.getElementById('h').value;
+    const m = document.getElementById('m').value;
+    const s = document.getElementById('s').value;
+    
+    startTimer(h, m, s, "timer-display");
+}
+
+function changelhUI(menustate) {
+
+    const timerDiv = document.getElementById('timer');
+    const menuDiv = document.getElementById('lhmenu');
+
+    // 모든 학습도우미 화면 숨기기
+    timerDiv.style.display = 'none';
+
+    // 메뉴 상태
+    if (menustate === 'menu') {
+
+        menuDiv.style.display = 'block';
+
+    }
+
+    // 타이머 열기
+    else if (menustate === 'timer') {
+
+        menuDiv.style.display = 'none';
+        timerDiv.style.display = 'flex';
+
+    }
+}
+
+
+function showFloor(floor){
+
+    const rooms=document.querySelectorAll(".room");
+
+    rooms.forEach(room=>{
+
+        if(floor==="all"){
+            room.style.display="flex";
+            return;
+        }
+
+        if(room.classList.contains("floor-"+floor)){
+            room.style.display="flex";
+        }else if(
+            room.classList.contains("vertical") ||
+            room.classList.contains("gray")
+        ){
+            room.style.display="flex";
+        }else{
+            room.style.display="none";
+        }
+
+    });
+
+}
+
+    
+
+// 초기 실행
+document.addEventListener('DOMContentLoaded', () => {
+    updateUI();
+    loadMeal();
+});
+</script>
+
+</body>
+</html>
